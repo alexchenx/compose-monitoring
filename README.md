@@ -40,8 +40,6 @@ docker-compose up -d prometheus alertmanager grafana tg_bot dingtalk_bot blackbo
 ### 导入k8s默认dashboards
 执行 k8s/grafana_dashboards_import.sh 脚本。
 
-然后编辑此脚本将dashboard_path改为custom-dashboards，再次执行导入与该Grafana版本兼容的自定义图表。
-
 ### 导入 Grafana dashboard，常用的如下
 - 16098: Node Exporter Dashboard (本版本中需导入16098 v2版本，或者图表已修复版 Node Exporter Dashboard 220417 通用Job分组版-1735278665099.json)
 - 17320: Mysqld Exporter Dashboard
