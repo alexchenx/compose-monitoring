@@ -1,0 +1,66 @@
+groups:
+  - name: node-exporter-rules
+    rules:
+      - alert: LoadAverage
+        annotations:
+          summary: >-
+            [ {{ $labels.job}} ] [ {{ $labels.instance }} ] [ {{ $labels.hostname }} ] load15/CPUCount > 2, current is {{ $value }}.
+        expr: >-
+          node_load15 / count without (cpu, mode) (node_cpu_seconds_total{mode="system"}) > 2
+        for: 0m
+        labels:
+          severity: critical
+      - alert: CPUUtilization
+        annotations:
+          summary: >-
+            [ {{ $labels.job }} ] [ {{ $labels.instance }} ] [ {{ $labels.hostname }} ] CPU utilization > 90% in 15 minutes, current Utilization is {{ $value }}%.
+        expr: >-
+          round(100 - avg(irate(node_cpu_seconds_total{mode="idle"}[15m])) by (job, instance, hostname) * 100, 0.01) > 90
+        for: 0m
+        labels:
+          severity: critical
+      - alert: MemoryUsed
+        annotations:
+          summary: >-
+            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} Memory used more than 90%, current is {{ $value }}%.
+        expr: >-
+          round(100 - node_memory_MemAvailable_bytes/node_memory_MemTotal_bytes * 100 > 90 , 0.01)
+        for: 0m
+        labels:
+          severity: warning
+      - alert: DiskUtilization
+        annotations:
+          summary: >-
+            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} Disk available < 20%, current is {{ $value }}%.
+        expr: >-
+          round((node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 20 , 0.01)
+        for: 0m
+        labels:
+          severity: warning
+      - alert: DiskSpace
+        annotations:
+          summary: >-
+            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} {{ $labels.device }} {{ $labels.mountpoint }} free space < 20G, current is {{ $value }}G .
+        expr: >-
+          round(node_filesystem_avail_bytes{device!="ramfs",device!="shm",device!="tmpfs",fstype!="nfs",fstype!="vfat"} / 1024 / 1024 / 1024 < 20 , 0.01)
+        for: 5m
+        labels:
+          severity: critical
+      - alert: Host_sockets
+        annotations:
+          summary: >-
+            [{{ $labels.job}}] Instance {{ $labels.instance }} {{ $labels.hostname }} Socket connections is higher in 2 minutes.
+        expr: >-
+          2 * sum_over_time(node_sockstat_sockets_used{job!="blackbox"}[2m]) < sum_over_time(node_sockstat_sockets_used{job!="blackbox"}[1m])
+        for: 5m
+        labels:
+          severity: warning
+      - alert: Host_DOWN
+        annotations:
+          summary: >-
+            {{ $labels.namespace }} [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} is down.
+        expr: >-
+          up{job!="blackbox"} == 0
+        for: 30s
+        labels:
+          severity: critical

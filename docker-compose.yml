@@ -1,0 +1,79 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.53.3
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./rules:/etc/prometheus/rules
+      - /data/monitoring/prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.max-block-duration=2h'
+      - '--storage.tsdb.min-block-duration=2h'
+      - '--web.enable-lifecycle'
+      - '--web.enable-remote-write-receiver'
+
+  alertmanager:
+    image: bitnami/alertmanager:0.26.0
+    container_name: alertmanager
+    restart: always
+    ports:
+      - "9093:9093"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./alertmanager.yml:/opt/bitnami/alertmanager/conf/config.yml
+
+  grafana:
+    image: grafana/grafana:9.1.5
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - /data/monitoring/grafana-data:/var/lib/grafana
+
+  tg_bot:
+    image: metalmatze/alertmanager-bot:0.4.3
+    container_name: tg_bot
+    restart: always
+    ports:
+      - "8085:8080"
+    environment:
+      TZ: Asia/Shanghai
+      ALERTMANAGER_URL: http://alertmanager:9093
+      TELEGRAM_ADMIN: 1234567890                                        # 管理员用户ID，可通过用户@userinfobot获取到
+      TELEGRAM_TOKEN: 1111111111:AAAAAAABBBBBBBBBBCCCCCCCCDDDDDDDDDD    # 用于访问API的TOKEN，可通过用户@BotFather获取到
+      STORE: bolt
+      BOLT_PATH: /data/bot.db
+
+  dingtalk_bot:
+    build:
+      context: .
+      dockerfile: dingtalk.Dockerfile
+    image: dingtalkbot:2.1.0
+    container_name: dingtalk_bot
+    restart: always
+    command: ./prometheus-webhook-dingtalk --config.file=dingtalk.yml --web.listen-address=:8060
+    ports:
+      - "8060:8060"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./dingtalk.yml:/usr/local/prometheus-webhook-dingtalk-2.1.0.linux-amd64/dingtalk.yml
+
+  blackbox_exporter:
+    container_name: blackbox_exporter
+    image: quay.io/prometheus/blackbox-exporter:latest
+    ports:
+      - "9115:9115"
+    environment:
+      TZ: Asia/Shanghai

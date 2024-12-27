@@ -1,0 +1,12 @@
+groups:
+  - name: blackbox-exporter-rules
+    rules:
+      - alert: Network
+        annotations:
+          summary: >-
+            Instance {{ $labels.instance }} return status code not 200, it's {{ $value }}.
+        expr: >-
+          probe_http_status_code != 200
+        for: 30s
+        labels:
+          severity: critical

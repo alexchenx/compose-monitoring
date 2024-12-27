@@ -1,0 +1,12 @@
+groups:
+  - name: custom-nats-exporter-rules
+    rules:
+      - alert: NatsJetStreamStorage
+        annotations:
+          summary: >-
+            {{ $labels.server_id }} {{ $labels.instance }} Nats JetStream storage used more than 80%.
+        expr: >-
+          gnatsd_varz_jetstream_stats_storage / gnatsd_varz_jetstream_config_max_storage * 100 > 80
+        for: 0m
+        labels:
+          severity: critical

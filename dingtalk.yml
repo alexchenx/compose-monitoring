@@ -1,0 +1,10 @@
+timeout: 5s
+
+targets:
+  webhook_robot:
+    # 在钉钉创建机器人后获得
+    url: https://oapi.dingtalk.com/robot/send?access_token=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  webhook_mention_all:
+    url: https://oapi.dingtalk.com/robot/send?access_token=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    mention:
+      all: true

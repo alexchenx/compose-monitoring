@@ -1,0 +1,43 @@
+receivers:
+  - name: 'null'
+
+  - name: 'dingtalk'
+    webhook_configs:
+      - url: 'http://dingtalk_bot:8060/dingtalk/webhook_robot/send'
+
+  - name: 'tg'
+    webhook_configs:
+      - url: 'http://tg_bot:8085'
+
+  - name: 'email'
+    email_configs:
+      - send_resolved: true
+        to: ops@example.com
+        from: noreply@example.com
+        smarthost: smtppro.zoho.com:587
+        auth_username: notice@example.com
+        auth_password: password
+        require_tls: true
+
+route:
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: 'null'
+  routes:
+    - receiver: 'email'
+      continue: true
+      matchers:
+        - alertname !~ "InfoInhibitor|Watchdog"
+
+    - receiver: 'dingtalk'
+      continue: true
+      matchers:
+        - severity =~ "warning|critical"
+
+    - receiver: 'tg'
+      continue: true
+      matchers:
+        - severity =~ "critical"
+
