@@ -43,15 +43,14 @@ docker-compose up -d prometheus alertmanager grafana tg_bot dingtalk_bot blackbo
 然后编辑此脚本将dashboard_path改为custom-dashboards，再次执行导入与该Grafana版本兼容的自定义图表。
 
 ### 导入 Grafana dashboard，常用的如下
-- 16098: Node Exporter (本版本中需导入16098 v2版本，或者图表已修复版 Node Exporter Dashboard 220417 通用Job分组版-1735278665099.json)
-- 17320: Mysqld Exporter
-- 763/17507: Redis Exporter
-- 9965: Blackbox Exporter
+- 16098: Node Exporter Dashboard (本版本中需导入16098 v2版本，或者图表已修复版 Node Exporter Dashboard 220417 通用Job分组版-1735278665099.json)
+- 17320: Mysqld Exporter Dashboard
+- 763/17507: Redis Dashboard
+- 9965: Blackbox Exporter Dashboard
 - 9734: Doris Overview
-- 13105: k8s dashboard
-- jvm: NG V1-1734074192714.json, 修改"uid": "prometheus"为"uid": "Prometheus"
-- jvm: NG V2-1734074212622.json, 修改"uid": "prometheus"为"uid": "Prometheus"
+- 13105: K8S Dashboard
 - 2279: NATS Server Dashboard
+- 21473: Etcd Cluster Overview
 
 
 
