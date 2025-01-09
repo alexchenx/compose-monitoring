@@ -1,0 +1,12 @@
+groups:
+  - name: custom-k8s-rules
+    rules:
+      - alert: OOMKilled
+        annotations:
+          summary: >-
+            [ {{ $labels.job}} ] [ {{ $labels.namespace }} ] pod {{ $labels.pod }} {{ $labels.instance }} OOM killed in 5 minutes.
+        expr: >-
+          increase(kube_pod_container_status_restarts_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
