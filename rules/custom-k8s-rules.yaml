@@ -4,9 +4,9 @@ groups:
       - alert: OOMKilled
         annotations:
           summary: >-
-            [ {{ $labels.job}} ] [ {{ $labels.namespace }} ] pod {{ $labels.pod }} {{ $labels.instance }} OOM killed in 5 minutes.
+            {{ $labels.namespace }} pod {{ $labels.pod }} {{ $labels.instance }} OOM killed.
         expr: >-
-          increase(kube_pod_container_status_restarts_total[5m]) > 0
+          kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} and on(namespace, pod, container) (increase(kube_pod_container_status_restarts_total[5m]) > 0)
         for: 0m
         labels:
           severity: critical
