@@ -53,11 +53,14 @@ docker-compose up -d prometheus alertmanager grafana tg_bot dingtalk_bot blackbo
 
 
 ## 其他Telegram相关
-1. 获取会话ID:
+1. 获取chat_id:
+
+   在机器人所在的群里随意发送一段带斜杠的字符，如: /abc ，然后请求下面API获取：
+   https://api.telegram.org/bot{YOUR_TOKEN}/getUpdates
     ```bash
-    # curl https://api.telegram.org/bot5546157333:AAHz9TEbbkoTMSFJYjE_ndGuI6OED0CtAAA/getMe
-    {"ok":true,"result":{"id":5546157333,"is_bot":true,"first_name":"monitor_robot","username":"monitor_bthy_bot","can_join_groups":true,"can_read_all_group_messages":false,"supports_inline_queries":false,"can_connect_to_business":false}}
+   # curl https://api.telegram.org/bot7785791616:AAFEP2qdelv-NoWau4SAqjbWJRfthENV0ER/getUpdates
     ```
+   结果中 result.message.chat.id 则为chat_id
 
 2. 当日志中出现如下日志时:
     ```text
