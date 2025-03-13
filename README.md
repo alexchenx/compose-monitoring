@@ -44,6 +44,7 @@ docker-compose up -d prometheus alertmanager grafana tg_bot dingtalk_bot blackbo
 - 16098: Node Exporter Dashboard (本版本中需导入16098 v2版本，或者图表已修复版 Node Exporter Dashboard 220417 通用Job分组版-1735278665099.json)
 - 17320: Mysqld Exporter Dashboard
 - 763/17507: Redis Dashboard
+- rocketmq_exporter.json (https://github.com/apache/rocketmq-exporter)
 - 9965: Blackbox Exporter Dashboard
 - 9734: Doris Overview
 - 13105: K8S Dashboard
