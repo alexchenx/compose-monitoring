@@ -1,11 +1,11 @@
 groups:
 - name: RocketMQ-Rules
   rules:
-  - alert: rocketmq_group_diff
+  - alert: MessageBacklog
     expr: rocketmq_group_diff{topic !~ ".*PublicMessageTopic.*", topic !~ ".*MessageTopic.*", topic !~ ".*AsyncDisorderTopic.*", topic !~ ".*bonus_account_topic.*", topic !~ ".*register_gift_notice.*"} > 100
     for: 5m
     labels:
       severity: warning
     annotations:
-      description: "{{$labels.Env}} topic ${{$labels.topic}} 存在消息积压，当前积压消息数量 ${{$value}}."
-      summary: "消息积压"
+      description: "{{$labels.Env}} topic {{$labels.topic}} 存在消息积压，当前积压消息数量 {{$value}}."
+      summary: "RocketMQ消息积压"
