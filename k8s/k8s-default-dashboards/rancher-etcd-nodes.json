@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 10,
+  "id": null,
   "links": [],
   "panels": [
     {
@@ -617,7 +617,7 @@
       "yaxes": [
         {
           "decimals": 2,
-          "format": "ms",
+          "format": "s",
           "label": null,
           "logBase": 1,
           "max": null,

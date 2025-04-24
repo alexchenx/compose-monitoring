@@ -1,6 +1,6 @@
 services:
   prometheus:
-    image: prom/prometheus:v2.53.3
+    image: prom/prometheus:v2.53.4
     container_name: prometheus
     restart: always
     ports:
@@ -18,9 +18,10 @@ services:
       - '--storage.tsdb.min-block-duration=2h'
       - '--web.enable-lifecycle'
       - '--web.enable-remote-write-receiver'
+      - '--storage.tsdb.retention.time=30d'
 
   alertmanager:
-    image: bitnami/alertmanager:0.26.0
+    image: bitnami/alertmanager:0.28.1
     container_name: alertmanager
     restart: always
     ports:
@@ -31,15 +32,18 @@ services:
       - ./alertmanager.yml:/opt/bitnami/alertmanager/conf/config.yml
 
   grafana:
-    image: grafana/grafana:9.1.5
+    image: grafana/grafana:11.1.0
     container_name: grafana
     restart: always
     ports:
       - "3000:3000"
     environment:
       TZ: Asia/Shanghai
+      GF_ANGULAR_SUPPORT_ENABLED: true
     volumes:
       - /data/monitoring/grafana-data:/var/lib/grafana
+      # 挂载 grafana.ini 主要目的在于启用 angular_support_enabled = true
+      - ./grafana.ini:/etc/grafana/grafana.ini
 
   tg_bot:
     image: metalmatze/alertmanager-bot:0.4.3

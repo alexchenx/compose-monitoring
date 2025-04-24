@@ -8,7 +8,7 @@
   "gnetId": null,
   "graphTooltip": 1,
   "hideControls": false,
-  "id": 8,
+  "id": null,
   "links": [],
   "refresh": "30s",
   "rows": [
@@ -938,6 +938,6 @@
   },
   "timezone": "utc",
   "title": "Node Exporter / USE Method / Node",
-  "uid": "7wClarVHz",
+  "uid": "fejutfxs1tbeob",
   "version": 1
 }

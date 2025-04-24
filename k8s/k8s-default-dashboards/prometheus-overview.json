@@ -6,7 +6,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "hideControls": false,
-  "id": 25,
+  "id": null,
   "links": [],
   "refresh": "60s",
   "rows": [
@@ -79,7 +79,7 @@
               "pattern": "Value #B",
               "thresholds": [],
               "type": "number",
-              "unit": "short"
+              "unit": "s"
             },
             {
               "alias": "Instance",
@@ -1070,6 +1070,6 @@
   },
   "timezone": "utc",
   "title": "Prometheus / Overview",
-  "uid": "33ku-94Hk",
+  "uid": "aejutg0b73xmoa",
   "version": 1
 }
