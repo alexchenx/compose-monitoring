@@ -3,9 +3,11 @@
  - 对于Rancher集群采用 remote_write 远程写的方案将数据推送到本机
  - 对于集群外资源和传统监控采集方案一致，直接将被监控资源 target 添加到prometheus.yml文件中
 
-说明：当前Rancher monitoring版本为 105.1.4+up61.3.2-rancher.5，为避免Grafana图表兼容性问题，Grafana所使用的版本和monitoring 105.1.4+up61.3.2-rancher.5中的版本保持一致
+说明：当前Rancher monitoring版本为 106.1.1+up69.8.2-rancher.5，为避免Grafana图表兼容性问题，Grafana所使用的版本和monitoring 106.1.1+up69.8.2-rancher.5中的版本保持一致
 
-分组告警的几种方案：
+**为什么要独立部署Prometheus？**
+
+因为分组告警的需要，分组告警的几种方案：
 1. 使用monitoring中的Routes and Receivers，该方案不能分组，弃用；
 2. 使用monitoring中的AlertmanagerConfigs，该方案分组告警可以工作，但只限于集群内资源，集群外资源无法识别，弃用；
 3. 独立部署外部Prometheus，集群外资源独立采集，集群外Prometheus采用remote_read远程读取集群内数据，分组告警可正常工作，但会出现有时无法采集到数据情况，有一些兼容性问题，弃用；
