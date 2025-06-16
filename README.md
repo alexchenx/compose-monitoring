@@ -14,60 +14,125 @@
 4. 独立部署外部Prometheus，集群外资源独立采集，外部Prometheus通过联邦模式抓取集群内Prometheus的所有job，存在抓取的集群内job数据都放到了一个job中，部分图表指标有使用固定的job名称导致出现问题
 5. 本方案，独立部署外部Prometheus，集群外资源独立采集，集群内资源采用remote_write远程写的方式将数据推送到外部Prometheus，外部拥有所有数据，分组告警可正常工作。
 
-## 部署步骤
-### 将k8s内部Prometheus暴露
-执行 k8s/k8s-service-nodeport-prometheus.yaml 创建nodeport，监听端口为 30909，目的是为了外部独立主机可监控k8s集群内部Prometheus.
 
-### 创建所需目录并授权
+
+## 部署步骤
+
+### 1、暴露k8s内部Prometheus
+执行 k8s-service-nodeport-prometheus.yaml 创建nodeport，监听端口为 30909，目的是为了外部独立主机可监控k8s集群内部Prometheus.
+
+```bash
+kubectl apply -f k8s-service-nodeport-prometheus.yaml
+```
+
+
+
+### 2、导出k8s内部规则
+```bash
+# 将rules configmap导出到configmap.yaml
+kubectl get configmap -n cattle-monitoring-system prometheus-rancher-monitoring-prometheus-rulefiles-0 -o yaml > configmap.yaml
+
+# 读取configmap.yaml解析到rules目录
+python3 export-k8s-rules.py
+```
+
+
+
+### 3、创建所需目录并授权
+
 ```bash
 rm -rf /data/monitoring/{prometheus-data,grafana-data}
 mkdir -p /data/monitoring/{prometheus-data,grafana-data}
 chmod 777 /data/monitoring/{prometheus-data,grafana-data}
 ```
 
-### 编辑 prometheus.yml 
+
+
+### 4、启动本地服务
+
 修改 prometheus.yml 文件中的 PROMETHEUS-HOST-IP 以及 K8S-NODE-IP 为对应的IP.
 
-### 启动服务
-```bash
-docker-compose up -d prometheus alertmanager grafana tg_bot dingtalk_bot blackbox_exporter
-```
-启动后检查服务是否正常。
+启动服务：
 
-### K8S指定远程写的地址
-找到 additionalRemoteWrite 部分,添加 url 指定远程Prometheus的地址，并且设置远程写的时候删除prometheus和prometheus_replica这两个标签，不然会导致图表出错。
+```bash
+docker-compose up -d prometheus alertmanager grafana blackbox_exporter
+```
+
+tg_bot 和 dingtalk_bot 先不启动，后面按需启动。
+
+
+
+### 5、K8S指定远程写的地址
+找到 additionalRemoteWrite 部分，添加 url 指定远程Prometheus的地址，并且设置远程写的时候删除 prometheus 和 prometheus_replica 这两个标签，不然会导致图表出错。
 ```yaml
     additionalRemoteWrite:
-      - url: http://192.168.200.139:9090/api/v1/write
+      - url: http://PROMETHEUS-HOST-IP:9090/api/v1/write
         writeRelabelConfigs:
         - action: labeldrop
           regex: prometheus|prometheus_replica
 ```
-找到 grafana.ini 部分，在 security 下 添加 angular_support_enabled: true ，原因是Grafana11已经弃用Angular，但是Rancher monitoring的图表依然依赖Angular，通过此配置重新启用，如果不需要访问集群内部的Grafana也可以不用配置此项。
+找到 grafana.ini 部分，在 security 下 添加 angular_support_enabled: true ，原因是Grafana11已经弃用Angular，但是 Rancher monitoring 的图表依然依赖Angular，通过此配置重新启用，如果不需要访问集群内部的Grafana也可以不用配置此项。
 ```yaml
     security:
       allow_embedding: true
       angular_support_enabled: true  # 添加此记录
 ```
 
-### 添加数据源
+
+
+### 6、本地Grafana操作
+
+#### 1）添加数据源
+
 进入Grafana后台添加2个Prometheus数据源，一个首字母大写Prometheus，一个首字符小写prometheus，因为导出的dashboard有几个读的是小写的prometheus数据源，为了不修改原始dashboard，直接添加2个数据源即可。
 
-### 导入k8s默认dashboards
-进入Grafana后台获取token: Administration->Users and access->Service accounts->Add service account
+#### 2）导出k8s默认图表
 
-执行 k8s/grafana_dashboards_import.sh 脚本。
+暴露k8s内部Grafana:
 
-### 导入 Grafana dashboard，常用的如下
+```bash
+kubectl apply -f k8s-service-nodeport-prometheus.yaml
+```
+
+
+
+获取Token：进入Grafana后台->Administration->Users and access->Service accounts->Add service account
+
+
+
+修改grafana_dashboards_export.sh中的HOST和TOKEN，然后执行脚本导出：
+
+```bash
+bash grafana_dashboards_export.sh
+```
+
+#### 3) 导入图表到本地Grafana
+
+获取Token：进入Grafana后台->Administration->Users and access->Service accounts->Add service account
+
+
+
+修改grafana_dashboards_import.sh中的HOST和TOKEN，然后执行脚本导入：
+
+```bash
+bash grafana_dashboards_import.sh
+```
+
+
+
+#### 4）导入其他图表
+
+常用的如下：
+
 - 16098: Node Exporter Dashboard
 - 17320: Mysqld Exporter Dashboard
 - 763/17507: Redis Dashboard
-- rocketmq_exporter.json (https://github.com/apache/rocketmq-exporter)
 - 9965: Blackbox Exporter Dashboard
 - 9734: Doris Overview
 - 13105: K8S Dashboard
 - 2279: NATS Server Dashboard
 - 21473: Etcd Cluster Overview
+- rocketmq_exporter.json (https://github.com/apache/rocketmq-exporter)
 
 
 

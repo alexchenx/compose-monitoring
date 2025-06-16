@@ -10,6 +10,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - ./rules:/etc/prometheus/rules
+      - ./custom-rules:/etc/prometheus/custom-rules
       - /data/monitoring/prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -43,7 +44,7 @@ services:
     volumes:
       - /data/monitoring/grafana-data:/var/lib/grafana
       # 挂载 grafana.ini 主要目的在于启用 angular_support_enabled = true
-      # - ./grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana.ini:/etc/grafana/grafana.ini
 
   tg_bot:
     container_name: tg_bot
