@@ -22,10 +22,10 @@ with open(configmap_file, 'r') as file:
 data = configmap.get('data', {})
 
 # 导出每个 key 到独立的文件
-os.mkdir("rules")
+os.mkdir("../rules")
 for key, value in data.items():
     names = key.split("-")
-    name = f"rules/{'-'.join(names[3:-5])}.yaml"
+    name = f"../rules/{'-'.join(names[3:-5])}.yaml"
     with open(name, 'w') as output_file:
         output_file.write(value)
 
