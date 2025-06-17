@@ -1,18 +1,18 @@
 ## 简介
-本compose用于独立部署Prometheus, Alertmanager, Grafana等监控组件，可同时监控Rancher集群资源以及其他集群外资源。
+本 compose 用于独立部署 Prometheus, Alertmanager, Grafana 等监控组件，可同时监控 Rancher 集群资源以及其他集群外资源。
  - 对于Rancher集群采用 remote_write 远程写的方案将数据推送到本机
  - 对于集群外资源和传统监控采集方案一致，直接将被监控资源 target 添加到prometheus.yml文件中
 
-说明：当前Rancher monitoring版本为 106.1.1+up69.8.2-rancher.5，为避免Grafana图表兼容性问题，Grafana所使用的版本和monitoring 106.1.1+up69.8.2-rancher.5中的版本保持一致
+说明：当前 Rancher monitoring 版本为 106.1.1+up69.8.2-rancher.5，为避免 Grafana 图表兼容性问题，Grafana 所使用的版本和 monitoring 106.1.1+up69.8.2-rancher.5 中的版本保持一致
 
-**为什么要独立部署Prometheus？**
+**为什么要独立部署 Prometheus？**
 
 因为分组告警的需要，分组告警的几种方案：
-1. 使用monitoring中的Routes and Receivers，该方案不能分组，弃用；
-2. 使用monitoring中的AlertmanagerConfigs，该方案分组告警可以工作，但只限于集群内资源，集群外资源无法识别，弃用；
-3. 独立部署外部Prometheus，集群外资源独立采集，集群外Prometheus采用remote_read远程读取集群内数据，分组告警可正常工作，但会出现有时无法采集到数据情况，有一些兼容性问题，弃用；
-4. 独立部署外部Prometheus，集群外资源独立采集，外部Prometheus通过联邦模式抓取集群内Prometheus的所有job，存在抓取的集群内job数据都放到了一个job中，部分图表指标有使用固定的job名称导致出现问题
-5. 本方案，独立部署外部Prometheus，集群外资源独立采集，集群内资源采用remote_write远程写的方式将数据推送到外部Prometheus，外部拥有所有数据，分组告警可正常工作。
+1. 使用 monitoring 中的 Routes and Receivers，该方案不能分组，弃用；
+2. 使用 monitoring 中的 AlertmanagerConfigs，该方案分组告警可以工作，但只限于集群内资源，集群外资源无法识别，弃用；
+3. 独立部署外部 Prometheus，集群外资源独立采集，集群外 Prometheus 采用 remote_read 远程读取集群内数据，分组告警可正常工作，但会出现有时无法采集到数据情况，有一些兼容性问题，弃用；
+4. 独立部署外部 Prometheus，集群外资源独立采集，外部 Prometheus 通过联邦模式抓取集群内 Prometheus 的所有 job，存在抓取的集群内job数据都放到了一个 job 中，部分图表指标有使用固定的job名称导致出现问题
+5. 本方案，独立部署外部 Prometheus，集群外资源独立采集，集群内资源采用 remote_write 远程写的方式将数据推送到外部 Prometheus，外部拥有所有数据，分组告警可正常工作。
 
 ## 部署步骤
 ### 1、暴露k8s内部Prometheus
@@ -55,27 +55,21 @@ tg_bot 和 dingtalk_bot 先不启动，后面按需启动。
         - action: labeldrop
           regex: prometheus|prometheus_replica
 ```
-找到 grafana.ini 部分，在 security 下 添加 angular_support_enabled: true ，原因是Grafana11已经弃用Angular，但是 Rancher monitoring 的图表依然依赖Angular，通过此配置重新启用，如果不需要访问集群内部的Grafana也可以不用配置此项。
-```yaml
-    security:
-      allow_embedding: true
-      angular_support_enabled: true  # 添加此记录
-```
-
 ### 6、本地Grafana操作
 #### 1）添加数据源
-进入本地Grafana后台添加2个Prometheus数据源，一个首字母大写Prometheus，一个首字母小写prometheus，因为导出的dashboard有几个读的是小写的prometheus数据源，为了不修改原始dashboard，直接添加2个数据源即可。
+进入本地 Grafana 后台添加2个 Prometheus 数据源，一个首字母大写 Prometheus，一个首字母小写 prometheus，因为导出的 dashboard 有几个读的是小写的 prometheus 数据源，为了不修改原始 dashboard，直接添加2个数据源即可。
 
 Connections -> Data sources -> Add data source
 
 #### 2）导出k8s默认图表
 暴露k8s内部Grafana:
+
 ```bash
 kubectl apply -f k8s-service-nodeport-grafana.yaml
 ```
-获取Token：进入Grafana后台->Administration->Users and access->Service accounts->Add service account
+获取 Token：进入Grafana后台->Administration->Users and access->Service accounts->Add service account
 
-修改grafana_dashboards_export.sh中的HOST和TOKEN，然后执行脚本导出：
+修改 grafana_dashboards_export.sh 中的 HOST 和 TOKEN，然后执行脚本导出：
 ```bash
 bash grafana_dashboards_export.sh
 ```
@@ -83,7 +77,7 @@ bash grafana_dashboards_export.sh
 #### 3) 导入图表到本地Grafana
 获取Token：进入Grafana后台->Administration->Users and access->Service accounts->Add service account
 
-修改grafana_dashboards_import.sh中的HOST和TOKEN，然后执行脚本导入：
+修改 grafana_dashboards_import.sh 中的 HOST 和 TOKEN，然后执行脚本导入：
 ```bash
 bash grafana_dashboards_import.sh
 ```

@@ -46,6 +46,15 @@ services:
       # 挂载 grafana.ini 主要目的在于启用 angular_support_enabled = true
       - ./grafana.ini:/etc/grafana/grafana.ini
 
+  blackbox_exporter:
+    container_name: blackbox_exporter
+    image: quay.io/prometheus/blackbox-exporter:latest
+    restart: always
+    ports:
+      - "9115:9115"
+    environment:
+      TZ: Asia/Shanghai
+
   tg_bot:
     container_name: tg_bot
     image: metalmatze/alertmanager-bot:0.4.3
@@ -74,11 +83,3 @@ services:
       TZ: Asia/Shanghai
     volumes:
       - ./dingtalk.yml:/usr/local/prometheus-webhook-dingtalk-2.1.0.linux-amd64/dingtalk.yml
-
-  blackbox_exporter:
-    container_name: blackbox_exporter
-    image: quay.io/prometheus/blackbox-exporter:latest
-    ports:
-      - "9115:9115"
-    environment:
-      TZ: Asia/Shanghai
