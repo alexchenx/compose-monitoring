@@ -14,18 +14,12 @@
 4. 独立部署外部Prometheus，集群外资源独立采集，外部Prometheus通过联邦模式抓取集群内Prometheus的所有job，存在抓取的集群内job数据都放到了一个job中，部分图表指标有使用固定的job名称导致出现问题
 5. 本方案，独立部署外部Prometheus，集群外资源独立采集，集群内资源采用remote_write远程写的方式将数据推送到外部Prometheus，外部拥有所有数据，分组告警可正常工作。
 
-
-
 ## 部署步骤
-
 ### 1、暴露k8s内部Prometheus
 执行 k8s-service-nodeport-prometheus.yaml 创建nodeport，监听端口为 30909，目的是为了外部独立主机可监控k8s集群内部Prometheus.
-
 ```bash
 kubectl apply -f k8s-service-nodeport-prometheus.yaml
 ```
-
-
 
 ### 2、导出k8s内部规则
 ```bash
@@ -36,31 +30,21 @@ kubectl get configmap -n cattle-monitoring-system prometheus-rancher-monitoring-
 python3 export-k8s-rules.py
 ```
 
-
-
 ### 3、创建所需目录并授权
-
 ```bash
 rm -rf /data/monitoring/{prometheus-data,grafana-data}
 mkdir -p /data/monitoring/{prometheus-data,grafana-data}
 chmod 777 /data/monitoring/{prometheus-data,grafana-data}
 ```
 
-
-
 ### 4、启动本地服务
-
 修改 prometheus.yml 文件中的 PROMETHEUS-HOST-IP 以及 K8S-NODE-IP 为对应的IP.
 
 启动服务：
-
 ```bash
 docker-compose up -d prometheus alertmanager grafana blackbox_exporter
 ```
-
 tg_bot 和 dingtalk_bot 先不启动，后面按需启动。
-
-
 
 ### 5、K8S指定远程写的地址
 找到 additionalRemoteWrite 部分，添加 url 指定远程Prometheus的地址，并且设置远程写的时候删除 prometheus 和 prometheus_replica 这两个标签，不然会导致图表出错。
@@ -78,52 +62,34 @@ tg_bot 和 dingtalk_bot 先不启动，后面按需启动。
       angular_support_enabled: true  # 添加此记录
 ```
 
-
-
 ### 6、本地Grafana操作
-
 #### 1）添加数据源
+进入本地Grafana后台添加2个Prometheus数据源，一个首字母大写Prometheus，一个首字母小写prometheus，因为导出的dashboard有几个读的是小写的prometheus数据源，为了不修改原始dashboard，直接添加2个数据源即可。
 
-进入Grafana后台添加2个Prometheus数据源，一个首字母大写Prometheus，一个首字符小写prometheus，因为导出的dashboard有几个读的是小写的prometheus数据源，为了不修改原始dashboard，直接添加2个数据源即可。
+Connections -> Data sources -> Add data source
 
 #### 2）导出k8s默认图表
-
 暴露k8s内部Grafana:
-
 ```bash
-kubectl apply -f k8s-service-nodeport-prometheus.yaml
+kubectl apply -f k8s-service-nodeport-grafana.yaml
 ```
-
-
-
 获取Token：进入Grafana后台->Administration->Users and access->Service accounts->Add service account
 
-
-
 修改grafana_dashboards_export.sh中的HOST和TOKEN，然后执行脚本导出：
-
 ```bash
 bash grafana_dashboards_export.sh
 ```
 
 #### 3) 导入图表到本地Grafana
-
 获取Token：进入Grafana后台->Administration->Users and access->Service accounts->Add service account
 
-
-
 修改grafana_dashboards_import.sh中的HOST和TOKEN，然后执行脚本导入：
-
 ```bash
 bash grafana_dashboards_import.sh
 ```
 
-
-
 #### 4）导入其他图表
-
 常用的如下：
-
 - 16098: Node Exporter Dashboard
 - 17320: Mysqld Exporter Dashboard
 - 763/17507: Redis Dashboard
@@ -133,8 +99,6 @@ bash grafana_dashboards_import.sh
 - 2279: NATS Server Dashboard
 - 21473: Etcd Cluster Overview
 - rocketmq_exporter.json (https://github.com/apache/rocketmq-exporter)
-
-
 
 ## 其他Telegram相关
 1. 获取chat_id:

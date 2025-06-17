@@ -1,7 +1,7 @@
 #!/bin/bash
 # Description: This script is use for export all grafana dashboards
 
-HOST="http://192.168.200.135:31337"
+HOST="http://K8S-NODE-IP:31337"
 TOKEN="glsa_oYUxKXlB6Qu9PMw9ZOLFt7K7YOeCyFjD_3d12e6ff"
 
 dir_name="k8s-default-dashboards"
