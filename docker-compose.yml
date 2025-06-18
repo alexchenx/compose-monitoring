@@ -23,7 +23,7 @@ services:
 
   alertmanager:
     container_name: alertmanager
-    image: bitnami/alertmanager:0.28.1
+    image: bitnami/alertmanager:0.26.0
     restart: always
     ports:
       - "9093:9093"
