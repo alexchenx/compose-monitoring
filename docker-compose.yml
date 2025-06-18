@@ -6,7 +6,7 @@ services:
     ports:
       - "9090:9090"
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - ./rules:/etc/prometheus/rules
@@ -28,7 +28,7 @@ services:
     ports:
       - "9093:9093"
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
     volumes:
       - ./alertmanager.yml:/opt/bitnami/alertmanager/conf/config.yml
 
@@ -39,7 +39,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
       GF_ANGULAR_SUPPORT_ENABLED: true
     volumes:
       - /data/monitoring/grafana-data:/var/lib/grafana
@@ -53,7 +53,7 @@ services:
     ports:
       - "9115:9115"
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
 
   tg_bot:
     container_name: tg_bot
@@ -62,7 +62,7 @@ services:
     ports:
       - "8085:8080"
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
       ALERTMANAGER_URL: http://alertmanager:9093
       TELEGRAM_ADMIN: 1234567890                                        # 管理员用户ID，可通过用户@userinfobot获取到
       TELEGRAM_TOKEN: 1111111111:AAAAAAABBBBBBBBBBCCCCCCCCDDDDDDDDDD    # 用于访问API的TOKEN，可通过用户@BotFather获取到
@@ -80,6 +80,6 @@ services:
     ports:
       - "8060:8060"
     environment:
-      TZ: Asia/Shanghai
+      TZ: UTC
     volumes:
       - ./dingtalk.yml:/usr/local/prometheus-webhook-dingtalk-2.1.0.linux-amd64/dingtalk.yml
