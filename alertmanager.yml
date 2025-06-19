@@ -7,7 +7,7 @@ receivers:
 
   - name: 'tg'
     webhook_configs:
-      - url: 'http://tg_bot:8085'
+      - url: 'http://tg_bot:8080'
 
   - name: 'email'
     email_configs:
@@ -39,5 +39,5 @@ route:
 #    - receiver: 'tg'
 #      continue: true
 #      matchers:
-#        - severity =~ "critical"
+#        - severity =~ "warning|critical"
 

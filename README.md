@@ -92,6 +92,7 @@ bash grafana_dashboards_import.sh
 - 13105: K8S Dashboard
 - 2279: NATS Server Dashboard
 - 21473: Etcd Cluster Overview
+- 19004: Spring Boot 3.x Statistics
 - rocketmq_exporter.json (https://github.com/apache/rocketmq-exporter)
 
 ## 其他Telegram相关
