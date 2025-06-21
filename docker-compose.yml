@@ -83,3 +83,20 @@ services:
       TZ: UTC
     volumes:
       - ./dingtalk.yml:/usr/local/prometheus-webhook-dingtalk-2.1.0.linux-amd64/dingtalk.yml
+
+  prometheus_alert:
+    container_name: prometheus_alert
+    image: feiyu563/prometheus-alert:v4.9.1
+    restart: always
+    ports:
+      - "9094:8080"
+    environment:
+      - "TZ=UTC"
+      - "PA_LOGIN_USER=prometheusalert"
+      - "PA_LOGIN_PASSWORD=prometheus@@alert"
+      - "PA_TITLE=PrometheusAlert"
+      - "PA_OPEN_FEISHU=1"
+      - "PA_OPEN_DINGDING=1"
+      - "PA_OPEN_WEIXIN=1"
+    volumes:
+      - /data/monitoring/PrometheusAlertDB:/app/db

@@ -42,7 +42,7 @@ chmod 777 /data/monitoring/{prometheus-data,grafana-data}
 
 启动服务：
 ```bash
-docker-compose up -d prometheus alertmanager grafana blackbox_exporter
+docker-compose up -d prometheus alertmanager grafana blackbox_exporter prometheus_alert
 ```
 tg_bot 和 dingtalk_bot 先不启动，后面按需启动。
 
