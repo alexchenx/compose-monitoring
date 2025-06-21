@@ -9,6 +9,10 @@ receivers:
     webhook_configs:
       - url: 'http://HOST-IP:8080'
 
+  - name: 'lark'
+    webhook_configs:
+       - url: 'http://HOST-IP:9094/prometheusalert?type=fs&tpl=prometheus-fsv2&fsurl=WEBHOOK-URL'
+
   - name: 'email'
     email_configs:
       - send_resolved: true
@@ -40,4 +44,8 @@ route:
 #      continue: true
 #      matchers:
 #        - severity =~ "warning|critical"
-
+#
+#    - receiver: 'lark'
+#      continue: true
+#      matchers:
+#        - severity =~ "warning|critical"
