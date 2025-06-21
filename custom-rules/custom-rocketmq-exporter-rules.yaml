@@ -2,10 +2,10 @@ groups:
 - name: RocketMQ-Rules
   rules:
   - alert: MessageBacklog
-    expr: rocketmq_group_diff{topic !~ ".*PublicMessageTopic.*", topic !~ ".*MessageTopic.*", topic !~ ".*AsyncDisorderTopic.*", topic !~ ".*bonus_account_topic.*", topic !~ ".*register_gift_notice.*"} > 1000
+    expr: rocketmq_group_diff{topic !~ ".*PublicMessageTopic.*", topic !~ ".*MessageTopic.*", topic !~ ".*AsyncDisorderTopic.*", topic !~ ".*bonus_account_topic.*", topic !~ ".*register_gift_notice.*"} > 10000
     for: 5m
     labels:
       severity: warning
     annotations:
-      description: "{{$labels.Env}} topic {{$labels.topic}} 消息积压数量 > 1000，当前积压消息数量 {{$value}}."
+      description: "{{$labels.Env}} topic {{$labels.topic}} 消息积压数量 > 10000，当前积压消息数量 {{$value}}."
       summary: "RocketMQ消息积压"
