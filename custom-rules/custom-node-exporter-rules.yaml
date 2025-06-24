@@ -1,15 +1,26 @@
 groups:
   - name: node-exporter-rules
     rules:
-      - alert: LoadAverage
+      - alert: node_load_average
         annotations:
           summary: >-
-            [ {{ $labels.job}} ] [ {{ $labels.instance }} ] [ {{ $labels.hostname }} ] load15/CPUCount > 2, current is {{ $value }}.
+            [{{ $labels.job }}] [{{ $labels.instance }}] [{{ $labels.hostname }}] load15/CPUCount > 1, current is {{ printf "%.2f" $value }}.
         expr: >-
-          node_load15 / count without (cpu, mode) (node_cpu_seconds_total{mode="system"}) > 2
-        for: 0m
+          node_load15 / count without (cpu, mode) (node_cpu_seconds_total) > 1
+        for: 1m
+        labels:
+          severity: warning
+
+      - alert: node_load_average
+        annotations:
+          summary: >-
+            [{{ $labels.job }}] [{{ $labels.instance }}] [{{ $labels.hostname }}] load15/CPUCount > 2, current is {{ printf "%.2f" $value }}.
+        expr: >-
+          node_load15 / count without (cpu, mode) (node_cpu_seconds_total) > 2
+        for: 1m
         labels:
           severity: critical
+
       - alert: CPUUtilization
         annotations:
           summary: >-
