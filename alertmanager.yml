@@ -24,10 +24,16 @@ receivers:
         require_tls: true
 
 inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
+  - source_matchers:
+      - severity="critical"
+    target_matchers:
+      - severity="critical"
+    equal: ['namespace', 'pod']
+
+  - source_matchers:
+      - severity="critical"
+    target_matchers:
+      - severity="warning"
     equal: ['alertname', 'instance']
 
 route:

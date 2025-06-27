@@ -46,7 +46,12 @@ docker-compose up -d prometheus alertmanager grafana blackbox_exporter prometheu
 ```
 tg_bot 和 dingtalk_bot 先不启动，后面按需启动。
 
-### 5、K8S指定远程写的地址
+### 5、删除k8s内部规则
+
+删除k8s集群内部Prometheus规则，如果k8s集群里的Prometheus规则和集群外独立的Prometheus规则同时进行评估，由于规则里有record规则，两端同时评估会存在问题，会出现 out of order sample 问题。
+
+### 6、K8S指定远程写的地址
+
 找到 additionalRemoteWrite 部分，添加 url 指定远程Prometheus的地址，并且设置远程写的时候删除 prometheus 和 prometheus_replica 这两个标签，不然会导致图表出错。
 ```yaml
     additionalRemoteWrite:
