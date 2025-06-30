@@ -13,13 +13,13 @@ groups:
       - alert: Pod_Memory_Usage
         annotations:
           summary: >-
-            [ {{ $labels.namespace }} ] pod [ {{ $labels.pod }} ] Memory usage more than 0.95 (95%), current is {{ $value }}.
+            [ {{ $labels.namespace }} ] pod [ {{ $labels.pod }} ] Memory usage more than 0.85 (85%), current is {{ $value }}.
         expr: >-
           sum(container_memory_working_set_bytes{container!="", namespace=~"ng.*"}) by (namespace, pod) 
           / 
           sum(kube_pod_container_resource_limits{resource="memory", namespace=~"ng.*"}) by (namespace, pod) 
-          > 0.95
-        for: 0m
+          > 0.85
+        for: 5m
         labels:
           severity: critical
       - alert: Pod_CPU_Usage
