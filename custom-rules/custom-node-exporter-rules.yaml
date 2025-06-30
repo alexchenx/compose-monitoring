@@ -34,7 +34,7 @@ groups:
       - alert: NodeDiskUsage
         annotations:
           summary: >-
-            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} disk usage > 80%, current is {{ printf "%.2f" $value }}%.
+            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} disk {{ $labels.device }} {{ $labels.mountpoint }} usage > 80%, current is {{ printf "%.2f" $value }}%.
         expr: >-
           (100 - (node_filesystem_avail_bytes{fstype!~"vfat|ramfs|tmpfs"} / node_filesystem_size_bytes{fstype!~"vfat|ramfs|tmpfs"} * 100)) > 80
         for: 5m
