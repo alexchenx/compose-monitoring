@@ -46,7 +46,7 @@ groups:
             More than 80% of MySQL files open on {{ $labels.instance }}<br>  VALUE = {{ $value }}<br>  LABELS= {{ $labels }}
           summary: MySQL high number of open files (instance {{ $labels.instance }})
         expr: >-
-          avg by (instance) (mysql_global_variables_innodb_open_files) / avg by (instance)(mysql_global_variables_open_files_limit) * 100 > 80
+          avg by (instance, hostname) (mysql_global_status_innodb_num_open_files) / avg by (instance, hostname)(mysql_global_variables_open_files_limit) * 100 > 80
         for: 2m
         labels:
           severity: warning

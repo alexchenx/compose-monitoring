@@ -1,17 +1,7 @@
 groups:
   - name: node-exporter-rules
     rules:
-      - alert: node_load_average
-        annotations:
-          summary: >-
-            [{{ $labels.job }}] [{{ $labels.instance }}] [{{ $labels.hostname }}] load15/CPUCount > 1, current is {{ printf "%.2f" $value }}.
-        expr: >-
-          node_load15 / count without (cpu, mode) (node_cpu_seconds_total) > 1
-        for: 1m
-        labels:
-          severity: warning
-
-      - alert: node_load_average
+      - alert: NodeLoadAverage
         annotations:
           summary: >-
             [{{ $labels.job }}] [{{ $labels.instance }}] [{{ $labels.hostname }}] load15/CPUCount > 2, current is {{ printf "%.2f" $value }}.
@@ -21,57 +11,64 @@ groups:
         labels:
           severity: critical
 
-      - alert: CPUUtilization
+      - alert: NodeCpuUsage
         annotations:
           summary: >-
-            [ {{ $labels.job }} ] [ {{ $labels.instance }} ] [ {{ $labels.hostname }} ] CPU utilization > 90% in 15 minutes, current Utilization is {{ $value }}%.
+            [ {{ $labels.job }} ] [ {{ $labels.instance }} ] [ {{ $labels.hostname }} ] CPU usage > 90% in 15 minutes, current is {{ printf "%.2f" $value }}%.
         expr: >-
-          round(100 - avg(irate(node_cpu_seconds_total{mode="idle"}[15m])) by (job, instance, hostname) * 100, 0.01) > 90
-        for: 0m
+          100 - avg(rate(node_cpu_seconds_total{mode="idle"}[15m])) by (job, instance, hostname) * 100 > 90
+        for: 1m
         labels:
           severity: critical
-      - alert: MemoryUsed
+
+      - alert: NodeMemoryUsage
         annotations:
           summary: >-
-            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} Memory used more than 90%, current is {{ $value }}%.
+            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} memory usage > 90%, current is {{ printf "%.2f" $value }}%.
         expr: >-
-          round(100 - node_memory_MemAvailable_bytes/node_memory_MemTotal_bytes * 100 > 90 , 0.01)
-        for: 0m
-        labels:
-          severity: warning
-      - alert: DiskUtilization
-        annotations:
-          summary: >-
-            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} Disk available < 20%, current is {{ $value }}%.
-        expr: >-
-          round((node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 20 , 0.01)
-        for: 0m
-        labels:
-          severity: warning
-      - alert: DiskSpace
-        annotations:
-          summary: >-
-            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} {{ $labels.device }} {{ $labels.mountpoint }} free space < 20G, current is {{ $value }}G .
-        expr: >-
-          round(node_filesystem_avail_bytes{device!="ramfs",device!="shm",device!="tmpfs",fstype!="nfs",fstype!="vfat"} / 1024 / 1024 / 1024 < 20 , 0.01)
-        for: 5m
-        labels:
-          severity: critical
-      - alert: Host_sockets
-        annotations:
-          summary: >-
-            [{{ $labels.job}}] Instance {{ $labels.instance }} {{ $labels.hostname }} Socket connections is higher in 2 minutes.
-        expr: >-
-          2 * sum_over_time(node_sockstat_sockets_used{job!="blackbox"}[2m]) < sum_over_time(node_sockstat_sockets_used{job!="blackbox"}[1m])
+          100 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100) > 90
         for: 5m
         labels:
           severity: warning
-      - alert: Host_DOWN
+
+      - alert: NodeDiskUsage
+        annotations:
+          summary: >-
+            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} disk usage > 80%, current is {{ printf "%.2f" $value }}%.
+        expr: >-
+          (100 - (node_filesystem_avail_bytes{fstype!~"vfat|ramfs|tmpfs"} / node_filesystem_size_bytes{fstype!~"vfat|ramfs|tmpfs"} * 100)) > 80
+        for: 5m
+        labels:
+          severity: warning
+
+      - alert: NodeDiskFreeSpace
+        annotations:
+          summary: >-
+            [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} {{ $labels.device }} {{ $labels.mountpoint }} free space < 20G, current is {{ printf "%.2f" $value }}G
+        expr: >-
+          node_filesystem_avail_bytes{fstype!~"vfat|ramfs|tmpfs"} / 1024 / 1024 / 1024 < 20
+        for: 5m
+        labels:
+          severity: critical
+
+      - alert: NodeSocketUsageAbnormal
+        annotations:
+          summary: >-
+            [{{ $labels.job }}] [{{ $labels.instance }}] [{{ $labels.hostname }}] socket usage abnormal.
+          description: >-
+            The current number of used sockets ({{ printf "%.0f" $value }}) is more than 1.5 times the average of the past 1 hour.
+        expr: >-
+          node_sockstat_sockets_used{job!="blackbox"}  > 1.5 * avg_over_time(node_sockstat_sockets_used{job!="blackbox"}[1h])
+        for: 5m
+        labels:
+          severity: warning
+
+      - alert: HostDown
         annotations:
           summary: >-
             {{ $labels.namespace }} [{{ $labels.job }}] Instance {{ $labels.instance }} {{ $labels.hostname }} is down.
         expr: >-
           up{job!="blackbox"} == 0
-        for: 30s
+        for: 1m
         labels:
           severity: critical
