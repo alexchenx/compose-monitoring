@@ -2,7 +2,7 @@
 # Description: This script is use for import all grafana dashboards
 
 HOST="http://127.0.0.1:3000"
-TOKEN="eyJrIjoiTjFzQ0hhRVhiVm8xMFBmamN3M3NMZTBlZTRMMDRqOG8iLCJuIjoidGVzdCIsImlkIjoxfQ=="
+TOKEN=""
 
 dashboard_path="k8s-default-dashboards"
 cd $dashboard_path || exit 1

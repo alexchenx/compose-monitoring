@@ -46,11 +46,7 @@ docker-compose up -d prometheus alertmanager grafana blackbox_exporter prometheu
 ```
 tg_bot 和 dingtalk_bot 先不启动，后面按需启动。
 
-### 5、删除k8s内部规则
-
-删除k8s集群内部Prometheus规则，如果k8s集群里的Prometheus规则和集群外独立的Prometheus规则同时进行评估，由于规则里有record规则，两端同时评估会存在问题，会出现 out of order sample 问题。
-
-### 6、K8S指定远程写的地址
+### 5、K8S指定远程写的地址
 
 找到 additionalRemoteWrite 部分，添加 url 指定远程Prometheus的地址，并且设置远程写的时候删除 prometheus 和 prometheus_replica 这两个标签，不然会导致图表出错。
 ```yaml
@@ -60,7 +56,14 @@ tg_bot 和 dingtalk_bot 先不启动，后面按需启动。
         - action: labeldrop
           regex: prometheus|prometheus_replica
 ```
+### 6、删除k8s内部规则
+
+删除k8s集群内部Prometheus规则，如果k8s集群里的Prometheus规则和集群外独立的Prometheus规则同时进行评估，由于规则里有record规则，两端同时评估会存在问题，会出现 out of order sample 问题。
+
+删除规则之后，将 StatefulSet 中的  prometheus-rancher-monitoring-prometheus 重新部署一下。
+
 ### 6、本地Grafana操作
+
 #### 1）添加数据源
 进入本地 Grafana 后台添加2个 Prometheus 数据源，一个首字母大写 Prometheus，一个首字母小写 prometheus，因为导出的 dashboard 有几个读的是小写的 prometheus 数据源，为了不修改原始 dashboard，直接添加2个数据源即可。
 
