@@ -89,7 +89,7 @@ bash grafana_dashboards_import.sh
 
 #### 4）导入其他图表
 常用的如下：
-- 16098: Node Exporter Dashboard
+- 1860/16098: Node Exporter Dashboard
 - 17320: Mysqld Exporter Dashboard
 - 763/17507: Redis Dashboard
 - 9965: Blackbox Exporter Dashboard
