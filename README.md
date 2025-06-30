@@ -103,6 +103,31 @@ bash grafana_dashboards_import.sh
 - 19004: Spring Boot 3.x Statistics
 - rocketmq_exporter.json (https://github.com/apache/rocketmq-exporter)
 
+## 告警模板
+```bash
+{{ $var := .externalURL }}{{ range $k, $v := .alerts }}
+{{ if eq $v.status "resolved" }}
+<font color="green">RESOLVED ✅: {{ $v.labels.alertname }}</font><br>
+<font color="green">级别: {{ $v.labels.severity }}</font>
+<font color="green">开始时间: {{GetCSTtime $v.startsAt}}</font>
+<font color="green">结束时间: {{GetCSTtime $v.endsAt}}</font>
+<font color="green">主机名: {{ $v.labels.hostname }}</font>
+<font color="green">实例IP: {{ $v.labels.instance }}</font>
+<font color="green">摘要: {{ $v.annotations.summary }}</font>
+<font color="green">描述: {{ $v.annotations.description }}</font>
+
+{{ else }}
+<font color="red">🔥 FIRING 🔥: {{ $v.labels.alertname }}</font><br>
+<font color="red">级别: {{ $v.labels.severity }}</font>
+<font color="red">开始时间: {{GetCSTtime $v.startsAt}}</font>
+<font color="red">主机名: {{ $v.labels.hostname }}</font>
+<font color="red">实例IP: {{ $v.labels.instance }}</font>
+<font color="red">摘要: {{ $v.annotations.summary }}</font>
+<font color="red">描述: {{ $v.annotations.description }}</font>
+{{ end }}
+{{ end }}
+```
+
 ## 其他Telegram相关
 1. 获取chat_id:
 
