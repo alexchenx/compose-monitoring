@@ -1,10 +1,10 @@
 groups:
   - name: custom-k8s-rules
     rules:
-      - alert: OOMKilled
+      - alert: Pod_OOMKilled
         annotations:
           summary: >-
-            {{ $labels.namespace }} pod {{ $labels.pod }} {{ $labels.instance }} OOM killed.
+            [ developer ] [ {{ $labels.namespace }} ] pod [ {{ $labels.pod }} ] {{ $labels.instance }} OOM killed.
         expr: >-
           kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} and on(namespace, pod, container) (increase(kube_pod_container_status_restarts_total[5m]) > 0)
         for: 0m
@@ -13,7 +13,7 @@ groups:
       - alert: Pod_Memory_Usage
         annotations:
           summary: >-
-            [ {{ $labels.namespace }} ] pod [ {{ $labels.pod }} ] Memory usage more than 0.85 (85%), current is {{ $value }}.
+            [ developer ] [ {{ $labels.namespace }} ] pod [ {{ $labels.pod }} ] Memory usage more than 0.85 (85%), current is {{ $value }}.
         expr: >-
           sum(container_memory_working_set_bytes{container!="", namespace=~"ng.*"}) by (namespace, pod) 
           / 
@@ -25,7 +25,7 @@ groups:
       - alert: Pod_CPU_Usage
         annotations:
           summary: >-
-            [ {{ $labels.namespace }} ] pod [ {{ $labels.pod }} ] CPU usage more than 0.9 (90%) on node {{ $labels.node }}, current is {{ $value }}.
+            [ developer ] [ {{ $labels.namespace }} ] pod [ {{ $labels.pod }} ] CPU usage more than 0.9 (90%) on node {{ $labels.node }}, current is {{ $value }}.
         expr: >-
           sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate) by (node, namespace, pod)
           /
