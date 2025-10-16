@@ -7,5 +7,5 @@ groups:
     labels:
       severity: warning
     annotations:
-      description: "{{$labels.Env}} topic {{$labels.topic}} 消息积压数量 > 10000，当前积压消息数量 {{$value}}."
+      description: "{{$labels.Env}} topic: {{$labels.topic}} group: {{$labels.group}} 消息积压数量 > 10000，当前积压消息数量 {{$value}}."
       summary: "RocketMQ消息积压"

@@ -14,9 +14,9 @@ groups:
       - alert: NodeCpuUsage
         annotations:
           summary: >-
-            [ {{ $labels.job }} ] [ {{ $labels.instance }} ] [ {{ $labels.hostname }} ] CPU usage > 90% in 15 minutes, current is {{ printf "%.2f" $value }}%.
+            [ {{ $labels.job }} ] [ {{ $labels.instance }} ] [ {{ $labels.hostname }} ] CPU usage > 90% (5m avg, 5m duration), current: {{ printf "%.2f" $value }}%.
         expr: >-
-          100 - avg(rate(node_cpu_seconds_total{mode="idle"}[15m])) by (job, instance, hostname) * 100 > 90
+          100 - avg by (job, instance, hostname) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100 > 90
         for: 1m
         labels:
           severity: critical
