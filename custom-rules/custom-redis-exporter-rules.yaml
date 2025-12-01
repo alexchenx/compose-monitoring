@@ -1,0 +1,11 @@
+groups:
+- name: Redis-Rules
+  rules:
+  - alert: redis_memory_used
+    expr: redis_memory_used_bytes/1024/1024/1024 > 5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: "{{ $labels.namespace }} redis 内存使用超过5G."
+      summary: "Redis内存使用超过5G"
